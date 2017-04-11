@@ -1,0 +1,50 @@
+language: go
+
+sudo: required
+
+go:
+  - 1.8.x
+
+env:
+  global:
+    - GTK_VERSION="3.18.9"
+    - secure: HgvkNlaR1pcnZcRscIM4eRi07uFogwbyVcrWrPG/0u5P1kpAYmrd7QfxcleqF5xZj+iAVdvCG0nbYGYkzAnXQIg0WBTC/FYtn9v1UrOJm7lLrspvBQkMSrxFUZFUJv3yXRHUgSKP1rLPaA0MzF8d/bRZolu83dgPWwhOZA+xuXA9FFd/qt8XZAI4ISolv1hyIW+K3VoP1f0nPuZb+zBQP/XGNE8HZHCdLlQrBTSQF8aSV0zt6IJsUNhsAFi6BMNxtutN0u18yIJrTTjBBh0cBau0wFoOtXr49h9sXrM+GL2F7wjQyszp7sBxmxwwJR4e+Z+LfKCI0WekivVBqZ4MeyYkdXeRbh1KNgURUutpIg7JM/WrOeuD1PvLkZTT0UoAICDOPopBNyNja3f+bIFvc1dfGTfuxc6KPZh4cl1bq841QFRv/iQpfTtgFjbqJbDVJS3U1V+pykiyu1YJcoEHpVhAH92d3aYQQlrf02zvBYmK+hXwtvUlOqz4QsAOFAupZSPCypWfdUcAsNRVVqZcRoHGAN+H5wjFZzGcL+bsJYGQ3UPSsPqBrMyFfleJGBNcaxcoxOuy/yPwY01rUYbQzl3w+IsTOrxHi9KvDre7Val4Fzmt29zPJS+yGveXrDSA+T6E8oxSQOxi0Ec7Kf4U3PAKNeEAE21GmdlBvXwspro=
+
+before_install:
+  - echo "before_install step"
+  - lsb_release -a
+  - go version
+  - go env
+  - sudo apt-get update -qq
+  - sudo apt-get install libcairo2-dev libglib2.0-dev --yes
+  - rm -rf ~/gtk/${GTK_VERSION}
+  - mkdir -p ~/gtk/${GTK_VERSION}
+  - wget http://ftp.gnome.org/pub/gnome/sources/gtk+/3.18/gtk+-${GTK_VERSION}.tar.xz -O ~/gtk/gtk+-${GTK_VERSION}.tar.xz
+  - cd ~/gtk && tar xf gtk+-${GTK_VERSION}.tar.xz
+  - cd ~/gtk/gtk+-${GTK_VERSION}
+  - ./configure
+  - make
+  - sudo make install
+
+install:
+  - echo "install step"
+  # - sudo apt-get install libgtk-3-dev=3.18.9-1ubuntu3.2 libcairo2-dev libglib2.0-dev
+  - go get github.com/twitchtv/retool
+  - make vendor
+
+script:
+  - echo "script step"
+  - ([ -n "${TRAVIS_TAG}" ] && make release CI=1 TAG=${TRAVIS_TAG}) || make test CI=1
+  - make coverage
+  - retool do goveralls -coverprofile=coverage/coverage.out -service=travis-ci
+
+deploy:
+  provider: releases
+  api_key:
+    secure: YgU+h1hjCcTB9jYrEdy8o8wGmQVZbqWdde1q1b36xiyFRV7GLKLvkAtANWU7+trrE75Jy1lxM2efUZFmmayZ6KiRvIXaKElFdD3qp6cZzS8xmqLxzQ+bdzcIdvILRL9Z/uY4yHJ9O6b/TmGA2dnPmOwqc7UyNu6at7oILJrW6ZxmndgUIHAtw0CovmleMS7X08boCYx5PF34WM2TDRWKUgDb5HAP/pPYI1S7D9g9SRwaq69NJKL+5X88C99QaZzaDB5D3H/czbysp0V/wT/fgYcAVrhmwfBazxNYCkUPpWbDN5d8tqSy4zRFWfoCfZgKLnQvuIdfGv31PxXDEN2x7Lm/nUkE6DchglndXaJ24se5T+e4562w02wN4KngtW0UGYYXB9G9KrX2AZEG2Dz39YDkNnpvQ3epXyUO7eUw0T7nqlIoh6ffusJybrC0y/v743kMXoZi9GDVR2zhHnSyPmb0JvU1JMB1smvFMWpPeyjGSyTCdnORDwwhRHO5caVFBi23qU8pPl7FxL6Igzuu1vzZKoPqsXim3FOaQpnO5WWUFECbCahpWfm1v38SXOvcuxFas+eBjjVzv7YuqX2MyO0Z7OLxhPtaRkjA41/NoYp/STAuaBKpk7aqhMOi2yLF8Pz/ViuObltAqx6p1C55sUNeaK5roNCss8neCBbVRn8=
+  skip_cleanup: true
+  file_glob: true
+  file:
+    - "./release/nebulo-client-desktop-*-${TRAVIS_TAG}*.tar.gz"
+  on:
+    tags: true

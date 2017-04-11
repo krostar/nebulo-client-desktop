@@ -1,0 +1,16 @@
+{
+  "Tools": [
+    {
+      "Repository": "github.com/kardianos/govendor",
+      "Commit": "b680b289efed61efc520aca3ff5a66f7340f85ff"
+    },
+    {
+      "Repository": "github.com/alecthomas/gometalinter",
+      "Commit": "bae2f1293d092fd8167939d5108d1b025eaef9de"
+    },
+    {
+      "Repository": "github.com/mattn/goveralls",
+      "Commit": "a99c5ee06aeeca2a2befc7e90b99061b1180850c"
+    }
+  ]
+}

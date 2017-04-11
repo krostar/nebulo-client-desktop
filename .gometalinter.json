@@ -1,0 +1,25 @@
+{
+    "Deadline": "15m",
+    "DisableAll": true,
+    "Enable": [
+        "interfacer",
+        "unused",
+        "aligncheck",
+        "errcheck",
+        "goconst",
+        "goimports",
+        "ineffassign",
+        "staticcheck",
+        "structcheck",
+        "unconvert",
+        "deadcode",
+        "golint",
+        "misspell",
+        "gocyclo",
+        "gas",
+        "gosimple",
+        "varcheck",
+        "dupl"
+    ],
+    "Vendor": true
+}
