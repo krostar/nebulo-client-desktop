@@ -22,7 +22,7 @@ DIR_RELEASE			:= $(DIR_PROJECT)/release
 DIR_RELEASE_TMP		:= $(DIR_PROJECT)/.tmp/
 
 # GTK version to use, see https://github.com/gotk3/gotk3/wiki
-GTK_VERSION			?= $(shell pkg-config --modversion gtk+-3.0 | sed -E 's/([0-9]+)\.([0-9]+).*/gtk_\1_\2/')
+GTK_VERSION			?= $(shell pkg-config --modversion gtk+-3.0 2>/dev/null | sed -E 's/([0-9]+)\.([0-9]+).*/gtk_\1_\2/' || echo "gtk_unknown")
 GTK_TAG				:= -tags $(GTK_VERSION)
 
 # Used to fill the version and some useful flags
@@ -52,7 +52,7 @@ all : clean vendor build test
 
 # Compile for current os/arch and save binary in $DIR_BUILD folder
 $(BINARY_NAME):
-	$Q echo -e '$(COLOR_PRINT)Building $(DIR_BUILD)/bin/$(BINARY_NAME)...$(COLOR_RESET)'
+	$Q echo -e '$(COLOR_PRINT)Building $(DIR_BUILD)/bin/$(BINARY_NAME) with $(GTK_VERSION)...$(COLOR_RESET)'
 	$Q mkdir -p $(DIR_BUILD)/bin
 	$Q go build -i -v -o $(DIR_BUILD)/bin/$(BINARY_NAME) $(BUILD_FLAGS)
 	$Q echo -e '$(COLOR_SUCCESS)Compilation done without errors$(COLOR_RESET)'
@@ -100,7 +100,7 @@ clean: vendor-clean
 # Create and run a docker image containing all needed libraries
 docker-build:
 	$Q docker build -t nebulo:client-desktop .
-	$Q docker stop nebulo_client_desktop 2>&1 > /dev/null || true
+	$Q docker stop nebulo_client_desktop || true
 	$Q docker run --name nebulo_client_desktop -d --rm -e DISPLAY=$(DISPLAY) --net=host -v /tmp/.X11-unix:/tmp/.X11-unix:ro -v $(DIR_PROJECT):/go/src/github.com/krostar/nebulo-client-desktop nebulo:client-desktop tail -f /dev/null
 	$Q xhost +localhost
 
@@ -116,7 +116,7 @@ docker-exec:
 test-dependencies:
 	$Q echo -e '$(COLOR_PRINT)Testing dependencies...$(COLOR_RESET)'
 	$Q retool do govendor list +unused +missing
-	@[ "$(shell retool do govendor list +unused +missing | wc -l)" = "0" ]
+	@[ $(shell retool do govendor list +unused +missing | wc -l) = 0 ]
 	$Q echo -e '$(COLOR_SUCCESS)Done$(COLOR_RESET)'
 
 # Check syntax, format, useless, and non-optimized code
@@ -137,7 +137,7 @@ test-unit:
 test-todo:
 	$Q echo -e '$(COLOR_PRINT)Testing presence of TODOs in code...$(COLOR_RESET)'
 	$Q find . -name vendor -prune -o -name _tools -prune -o -name "*.go" -exec grep -Hn "//TODO:" {} \;
-	@[ "$(shell find . -name vendor -prune -o -name _tools -prune -o -name "*.go" -exec grep -Hn "//TODO:" {} \; | wc -l)" = "0" ]
+	@[ $(shell find . -name vendor -prune -o -name _tools -prune -o -name "*.go" -exec grep -Hn "//TODO:" {} \; | wc -l) = 0 ]
 	$Q echo -e '$(COLOR_SUCCESS)Done$(COLOR_RESET)'
 
 # Check all kind of tests
@@ -152,7 +152,7 @@ coverage:
 	$Q # go test -covermode="$(TEST_COVERAGE_MODE)" -coverprofile="$(DIR_COVERAGE)/coverage.tmp" $(GTK_TAG) "$$pkg" 2>&1 > /dev/null; \
 	$Q #grep -h -v "^mode:" $(DIR_COVERAGE)/coverage.tmp >> $(DIR_COVERAGE)/coverage.out 2> /dev/null; \
 	$Q for pkg in $(shell retool do govendor list -no-status +local); do \
-		go test -covermode="$(TEST_COVERAGE_MODE)" -coverprofile="$(DIR_COVERAGE)/coverage.tmp" -tags gtk_3_18 "$$pkg"; \
+		go test -covermode="$(TEST_COVERAGE_MODE)" -coverprofile="$(DIR_COVERAGE)/coverage.tmp" -tags $(GTK_TAG) "$$pkg"; \
 		(test -e $(DIR_COVERAGE)/coverage.tmp && grep -h -v "^mode:" $(DIR_COVERAGE)/coverage.tmp >> $(DIR_COVERAGE)/coverage.out) || true; \
 	done
 	$Q rm -f $(DIR_COVERAGE)/coverage.tmp
