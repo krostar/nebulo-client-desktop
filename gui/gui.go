@@ -4,44 +4,52 @@
 package gui
 
 import (
+	"errors"
 	"fmt"
 
 	"github.com/gotk3/gotk3/gtk"
+	"github.com/krostar/nebulo-golib/log"
+
+	"github.com/krostar/nebulo-client-desktop/api"
+	"github.com/krostar/nebulo-client-desktop/config"
+	"github.com/krostar/nebulo-client-desktop/gui/view"
 )
-
-func buildMainWindow(win *gtk.Window) (err error) {
-	win.SetTitle("Simple Example")
-	label, err := gtk.LabelNew("Hello, gotk3!")
-	if err != nil {
-		return fmt.Errorf("unable to create label: %v", err)
-	}
-
-	// add the label to the window.
-	win.Add(label)
-	win.SetDefaultSize(800, 600)
-	return nil
-}
 
 // GUI start the main gui window
 func GUI() (err error) {
 	gtk.Init(nil)
 
-	win, err := gtk.WindowNew(gtk.WINDOW_TOPLEVEL)
-	if err != nil {
-		return fmt.Errorf("unable to create window: %v", err)
-	}
-	_, err = win.Connect("destroy", func() {
-		gtk.MainQuit()
-	})
-	if err != nil {
-		return fmt.Errorf("unable to add destroy callback: %v", err)
+	var (
+		baseTitle = "Nebulo - "
+
+		cert   = config.Config.Run.TLS.Cert
+		key    = config.Config.Run.TLS.Key
+		keypwd = config.Config.Run.TLS.KeyPassword
+	)
+
+	// if cert is defined, try to login with it
+	if cert != "" {
+		if err = api.API.LoginWithCertsFilename(cert, key, []byte(keypwd)); err != nil {
+			err = fmt.Errorf("unable to log in using %q and %q: %v", cert, key, err)
+		}
+	} else {
+		err = errors.New("cert is undefined")
 	}
 
-	if err = buildMainWindow(win); err != nil {
-		return fmt.Errorf("unable to build main windows: %v", err)
+	if err != nil {
+		log.Warningf("unable to log in, we have to ask for valid credentials: %v", err)
+		window := view.Login{}
+		window.WindowBaseTitle = baseTitle
+		if err = window.Load(); err != nil {
+			return fmt.Errorf("unable to build login window: %v", err)
+		}
+	} else {
+		window := view.Main{}
+		window.WindowBaseTitle = baseTitle
+		if err = window.Load(); err != nil {
+			return fmt.Errorf("unable to build main window: %v", err)
+		}
 	}
-
-	win.ShowAll()
 
 	// this block forever until main window is closed
 	gtk.Main()

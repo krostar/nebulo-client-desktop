@@ -26,9 +26,10 @@ type runOptions struct {
 
 // TLSOptions store required TLS options
 type TLSOptions struct {
-	Cert          string `json:"cert" validate:"file=omitempty+readable"`
-	Key           string `json:"key" validate:"file=omitempty+readable"`
+	Key           string `json:"key" validate:"file=readable"`
+	KeyPassword   string `json:"key_password"`
 	ClientsCACert string `json:"clients_ca_cert" validate:"file=readable"`
+	Cert          string `json:"cert" validate:"file=omitempty+readable"`
 }
 
 // Options list all the available configurations

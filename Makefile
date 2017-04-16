@@ -102,7 +102,7 @@ docker-build:
 	$Q docker build -t nebulo:client-desktop .
 	$Q docker stop nebulo_client_desktop || true
 	$Q docker run --name nebulo_client_desktop -d --rm -e DISPLAY=$(DISPLAY) --net=host -v /tmp/.X11-unix:/tmp/.X11-unix:ro -v $(DIR_PROJECT):/go/src/github.com/krostar/nebulo-client-desktop nebulo:client-desktop tail -f /dev/null
-	$Q xhost +localhost
+	$Q xhost +
 
 # Run the code inside the docker container
 docker-run:

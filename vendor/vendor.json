@@ -57,6 +57,14 @@
 			"versionExact": "dev"
 		},
 		{
+			"checksumSHA1": "f0YiW2zXepz1RlGW+4xSs/cOApg=",
+			"path": "github.com/krostar/nebulo-golib/tools/cert",
+			"revision": "bff133c18dd20bba2906c1cbc1085e719792991e",
+			"revisionTime": "2017-04-16T07:53:14Z",
+			"version": "dev",
+			"versionExact": "dev"
+		},
+		{
 			"checksumSHA1": "l/gJu7XY8SeUB4oQ3xQSZGOUo/8=",
 			"path": "github.com/krostar/nebulo-golib/tools/validator",
 			"revision": "bbcda33d5a0650a61a2e1fa21b9f6ad02c7a4df5",

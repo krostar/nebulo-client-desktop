@@ -128,7 +128,7 @@ func beforeCommandWhoNeedMergeConfiguration(c *cli.Context) (err error) {
 func commandRun(_ *cli.Context) error {
 	log.Infof("Starting Nebulo client build %s (%s): %s", BuildVersion, BuildTime, config.Config.Run.BaseURL)
 
-	_, version, err := api.New(BuildVersion, config.Config.Run.BaseURL, &config.Config.Run.TLS)
+	version, err := api.Initialize(BuildVersion, config.Config.Run.BaseURL, &config.Config.Run.TLS)
 	if err != nil {
 		return fmt.Errorf("unable to initialize API client: %v", err)
 	}

@@ -1,0 +1,17 @@
+{
+    "global": {
+        "log": {
+            "verbose": "",
+            "file": ""
+        }
+    },
+    "run": {
+        "tls": {
+            "key": "",
+            "key_password": "",
+            "clients_ca_cert": "",
+            "cert": ""
+        },
+        "baseurl": ""
+    }
+}

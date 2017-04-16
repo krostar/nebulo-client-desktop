@@ -10,14 +10,16 @@ import (
 	"github.com/krostar/nebulo-client-desktop/config"
 )
 
-// API store informations to make the communication
+// Server store informations to make the communication
 // with the API server easier
-type API struct {
+type Server struct {
 	Client    string
 	BaseURL   string
 	TLSConfig *tls.Config
 	HTTP      *http.Client
 }
+
+var API *Server
 
 func createTLSConfig(tlsOptions *config.TLSOptions) (config *tls.Config, err error) {
 	clientCAFile, err := ioutil.ReadFile(tlsOptions.ClientsCACert)
@@ -44,7 +46,7 @@ func createTLSConfig(tlsOptions *config.TLSOptions) (config *tls.Config, err err
 }
 
 // Get create and send a GET request and return the response
-func (api *API) Get(endpoint string) (response *http.Response, err error) {
+func (api *Server) Get(endpoint string) (response *http.Response, err error) {
 	request, err := http.NewRequest("GET", fmt.Sprintf("%s/%s", api.BaseURL, endpoint), nil)
 	if err != nil {
 		return nil, fmt.Errorf("unable to create request: %v", err)
@@ -58,14 +60,14 @@ func (api *API) Get(endpoint string) (response *http.Response, err error) {
 	return response, nil
 }
 
-// New create a new API{} base url and certificate configuration
-func New(version string, baseurl string, tlsOptions *config.TLSOptions) (api *API, serverVersion *VersionResponse, err error) {
+// Initialize create a new Server{} base url and certificate configuration
+func Initialize(version string, baseurl string, tlsOptions *config.TLSOptions) (serverVersion *VersionResponse, err error) {
 	tlsConfig, err := createTLSConfig(tlsOptions)
 	if err != nil {
-		return nil, nil, fmt.Errorf("tls configuration error: %v", err)
+		return nil, fmt.Errorf("tls configuration error: %v", err)
 	}
 
-	api = &API{
+	api := &Server{
 		Client:    fmt.Sprintf("nebulo-desktop/%s", version),
 		BaseURL:   baseurl,
 		TLSConfig: tlsConfig,
@@ -74,7 +76,8 @@ func New(version string, baseurl string, tlsOptions *config.TLSOptions) (api *AP
 
 	serverVersion, err = api.Version()
 	if err != nil {
-		return nil, nil, fmt.Errorf("unable to communicate with server %q: %v", baseurl, err)
+		return nil, fmt.Errorf("unable to communicate with server %q: %v", baseurl, err)
 	}
-	return api, serverVersion, nil
+	API = api
+	return serverVersion, nil
 }
