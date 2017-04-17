@@ -15,7 +15,7 @@ type VersionResponse struct {
 }
 
 // Version return the server versions informations
-func (api *API) Version() (version *VersionResponse, err error) {
+func (api *Server) Version() (version *VersionResponse, err error) {
 	log.Debugln("doing Version call")
 	response, err := api.Get("version")
 	if err != nil {
