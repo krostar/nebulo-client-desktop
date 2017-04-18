@@ -13,6 +13,20 @@ import (
 // Login log a user based on his nebulo signed certificate
 func (api *Server) Login(cert *x509.Certificate, key crypto.Signer) (err error) {
 	log.Debugln("doing Login call")
+
+	//verify if certificate has been revoked
+	revoked, err := cert.VerifyCertificate(cert)
+
+	if err != nil {
+		fmt.Errorf("Unable to verfiy certificate.", err)
+	}
+
+	if (revoked)  {
+		return fmt.Errorf("Your certificate has been revoked.")
+	} else {
+		fmt.Println("You can log in")
+	}
+
 	return errors.New("unhandled")
 }
 
