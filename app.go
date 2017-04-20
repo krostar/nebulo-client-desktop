@@ -3,7 +3,6 @@ package main
 import (
 	"encoding/json"
 	"fmt"
-	"io/ioutil"
 	"os"
 	"strings"
 
@@ -37,7 +36,7 @@ func main() {
 				}
 			}
 			return nil
-		}, Flags: []cli.Flag{
+		}, Flags: []cli.Flag{ // global flags (config and logs purpose)
 			&cli.StringFlag{
 				Name:    "config",
 				Aliases: []string{"c"},
@@ -56,7 +55,7 @@ func main() {
 				Destination: &config.CLI.Global.Logging.Verbose,
 			},
 		}, Commands: []*cli.Command{
-			&cli.Command{
+			&cli.Command{ // run command, she start the client
 				Name:  "run",
 				Usage: "start the client",
 				Flags: []cli.Flag{
@@ -80,7 +79,7 @@ func main() {
 					},
 				}, Before: beforeCommandWhoNeedMergeConfiguration,
 				Action: commandRun,
-			}, &cli.Command{
+			}, &cli.Command{ // config-gen command, she generate an empty configuration file
 				Name:  "config-gen",
 				Usage: "generate a configuration file and quit",
 				Flags: []cli.Flag{
@@ -92,7 +91,7 @@ func main() {
 					},
 				}, Before: beforeEveryCommand,
 				Action: commandConfigGen,
-			}, &cli.Command{
+			}, &cli.Command{ // version command output the current client version
 				Name:   "version",
 				Usage:  "display the version",
 				Before: beforeEveryCommand,
@@ -107,6 +106,7 @@ func main() {
 }
 
 func beforeEveryCommand(c *cli.Context) (err error) {
+	// we don't want remaining (non-parsed args)
 	if c.NArg() != 0 {
 		return fmt.Errorf("unknown remaining args: %q", strings.Join(c.Args().Slice(), " "))
 	}
@@ -117,6 +117,7 @@ func beforeCommandWhoNeedMergeConfiguration(c *cli.Context) (err error) {
 	if err = beforeEveryCommand(c); err != nil {
 		return err
 	}
+	// merge cli and file loaded configuration
 	config.Merge()
 	if err = config.Apply(); err != nil {
 		return fmt.Errorf("configuration application failed: %v", err)
@@ -128,25 +129,28 @@ func beforeCommandWhoNeedMergeConfiguration(c *cli.Context) (err error) {
 func commandRun(_ *cli.Context) error {
 	log.Infof("Starting Nebulo client build %s (%s): %s", BuildVersion, BuildTime, config.Config.Run.BaseURL)
 
+	// try to reach the api server
 	version, err := api.Initialize(BuildVersion, config.Config.Run.BaseURL, &config.Config.Run.TLS)
 	if err != nil {
 		return fmt.Errorf("unable to initialize API client: %v", err)
 	}
 	log.Infof("Using server API %q version: %s (%s)", config.Config.Run.BaseURL, version.Version, version.Time)
 
+	// start the GUI
 	return gui.GUI()
 }
 
 func commandConfigGen(c *cli.Context) error {
-	conf, err := json.MarshalIndent(config.Config, "", "    ")
-	if err != nil {
-		return fmt.Errorf("unable to create json: %v", err)
-	}
 	if filepath := c.String("destination"); filepath != "" {
-		if err := ioutil.WriteFile(filepath, conf, 0644); err != nil {
+		config.Filepath = filepath
+		if err := config.SaveFile(); err != nil {
 			return fmt.Errorf("unable to write sql queries file: %v", err)
 		}
 	} else {
+		conf, err := json.MarshalIndent(config.Config, "", "    ")
+		if err != nil {
+			return fmt.Errorf("unable to create json: %v", err)
+		}
 		fmt.Println(string(conf))
 	}
 	return nil

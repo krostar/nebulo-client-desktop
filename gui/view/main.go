@@ -1,6 +1,3 @@
-// Package view ...
-// to prevent linter exceptions caused by gtk librairy, theses linters are unused in the whole package: gosimple, errcheck, staticcheck, unused
-// nolint: gosimple, errcheck, staticcheck, unused
 package view
 
 import (
@@ -21,11 +18,12 @@ func (v *Main) Load() (err error) {
 	if err != nil {
 		return fmt.Errorf("unable to create builder: %v", err)
 	}
-
+	// load the view from a file
 	if err = v.builder.AddFromFile("gui/view/main.ui"); err != nil {
 		return fmt.Errorf("unable to add file to builder: %v", err)
 	}
 
+	// get window from loaded file
 	v.Window, err = v.FindWindowWithBuilder(v.builder, "window_main")
 	if err != nil {
 		return fmt.Errorf("unable to find window in builder: %v", err)

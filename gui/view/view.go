@@ -1,6 +1,3 @@
-// Package view ...
-// to prevent linter exceptions caused by gtk librairy, theses linters are unused in the whole package: gosimple, errcheck, staticcheck, unused
-// nolint: gosimple, errcheck, staticcheck, unused
 package view
 
 import (
@@ -30,11 +27,15 @@ func (m *Module) Dialog(messageType gtk.MessageType, format string, args ...inte
 		log.Errorf(format, args...)
 	}
 	infoBox := gtk.MessageDialogNew(m.Window, gtk.DIALOG_DESTROY_WITH_PARENT, messageType, gtk.BUTTONS_CLOSE, format, args...)
-	infoBox.Connect("response", infoBox.Destroy)
+	_, err := infoBox.Connect("response", infoBox.Destroy)
+	if err != nil {
+		log.Warningf("unable to connect response event: %v", err)
+	}
 	infoBox.Show()
 }
 
 // FindButtonWithBuilder return a button stored in a builder, based on his name
+// nolint: dupl
 func (m *Module) FindButtonWithBuilder(builder *gtk.Builder, buttonName string) (button *gtk.Button, err error) {
 	widget, err := builder.GetObject(buttonName)
 	if err != nil {
@@ -50,6 +51,7 @@ func (m *Module) FindButtonWithBuilder(builder *gtk.Builder, buttonName string) 
 }
 
 // FindEntryWithBuilder return an entry stored in a builder, based on his name
+// nolint: dupl
 func (m *Module) FindEntryWithBuilder(builder *gtk.Builder, entryName string) (button *gtk.Entry, err error) {
 	widget, err := builder.GetObject(entryName)
 	if err != nil {
@@ -65,6 +67,7 @@ func (m *Module) FindEntryWithBuilder(builder *gtk.Builder, entryName string) (b
 }
 
 // FindFileChooserButtonWithBuilder return an file chooser button stored in a builder, based on his name
+// nolint: dupl
 func (m *Module) FindFileChooserButtonWithBuilder(builder *gtk.Builder, fileChooserName string) (button *gtk.FileChooserButton, err error) {
 	widget, err := builder.GetObject(fileChooserName)
 	if err != nil {
@@ -80,6 +83,7 @@ func (m *Module) FindFileChooserButtonWithBuilder(builder *gtk.Builder, fileChoo
 }
 
 // FindWindowWithBuilder return an window stored in a builder, based on his name
+// nolint: dupl
 func (m *Module) FindWindowWithBuilder(builder *gtk.Builder, windowName string) (window *gtk.Window, err error) {
 	widget, err := builder.GetObject(windowName)
 	if err != nil {

@@ -26,10 +26,10 @@ type runOptions struct {
 
 // TLSOptions store required TLS options
 type TLSOptions struct {
-	Key           string `json:"key" validate:"file=readable"`
+	Key           string `json:"key" validate:"file=omitempty+readable"`
 	KeyPassword   string `json:"key_password"`
 	ClientsCACert string `json:"clients_ca_cert" validate:"file=readable"`
-	Cert          string `json:"cert" validate:"file=omitempty+readable"`
+	Cert          string `json:"cert" validate:"string=nonempty"`
 }
 
 // Options list all the available configurations
@@ -45,6 +45,9 @@ var (
 	CLI = &Options{}
 	// File store the configuration fetched from an optional file
 	File = &Options{}
+
+	// Filepath is the path of the loaded configuration file
+	Filepath string
 )
 
 // LoadFile fill config.File with the configuration parsed from path
@@ -58,6 +61,23 @@ func LoadFile(path string) (err error) {
 		return fmt.Errorf("unable to parse json file: %v", err)
 	}
 
+	Filepath = path
+
+	return nil
+}
+
+// SaveFile save the current configuration to a file
+func SaveFile() (err error) {
+	if Filepath == "" {
+		return nil
+	}
+	conf, err := json.MarshalIndent(Config, "", "    ")
+	if err != nil {
+		return fmt.Errorf("unable to create json: %v", err)
+	}
+	if err := ioutil.WriteFile(Filepath, conf, 0600); err != nil {
+		return fmt.Errorf("unable to write configuration file %q: %v", Filepath, err)
+	}
 	return nil
 }
 

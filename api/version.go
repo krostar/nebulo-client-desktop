@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"io/ioutil"
+	"net/http"
 
 	"github.com/krostar/nebulo-golib/log"
 )
@@ -17,17 +18,13 @@ type VersionResponse struct {
 // Version return the server versions informations
 func (api *Server) Version() (version *VersionResponse, err error) {
 	log.Debugln("doing Version call")
-	response, err := api.Get("version")
+
+	response, err := api.Get("version", http.StatusOK)
 	if err != nil {
 		return nil, fmt.Errorf("unable to get response: %v", err)
 	}
-	defer func() {
-		if err = response.Body.Close(); err != nil {
-			panic(err)
-		}
-	}()
-	log.Debugln("response status: %s", response.Status)
 
+	defer response.Body.Close() // nolint: errcheck
 	raw, err := ioutil.ReadAll(response.Body)
 	if err != nil {
 		return nil, fmt.Errorf("unable to read response data: %v", err)
@@ -35,6 +32,7 @@ func (api *Server) Version() (version *VersionResponse, err error) {
 
 	vr := &VersionResponse{}
 	if err = json.Unmarshal(raw, vr); err != nil {
+		log.Debugf("ERROR VERSION: %v", err)
 		return nil, fmt.Errorf("unable to parse response data: %v", err)
 	}
 

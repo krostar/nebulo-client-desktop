@@ -23,12 +23,12 @@ DIR_RELEASE_TMP		:= $(DIR_PROJECT)/.tmp/
 
 # GTK version to use, see https://github.com/gotk3/gotk3/wiki
 GTK_VERSION			?= $(shell pkg-config --modversion gtk+-3.0 2>/dev/null | sed -E 's/([0-9]+)\.([0-9]+).*/gtk_\1_\2/' || echo "gtk_unknown")
-GTK_TAG				:= -tags $(GTK_VERSION)
 
 # Used to fill the version and some useful flags
 BUILD_VERSION		:= $(shell git describe --tags --always --dirty="-dev")
 BUILD_TIME			:= $(shell date -u '+%Y-%m-%d-%H%M UTC')
-BUILD_FLAGS			:= -ldflags='-X "main.BuildVersion=$(BUILD_VERSION)" -X "main.BuildTime=$(BUILD_TIME)"' $(GTK_TAG)
+BUILD_FLAGS			:= -ldflags='-X "main.BuildVersion=$(BUILD_VERSION)" -X "main.BuildTime=$(BUILD_TIME)"'
+BUILD_TAGS			:= -tags $(GTK_VERSION)
 
 # CI variable define how informations are displayed on console
 ifeq ($(CI),0)
@@ -54,7 +54,7 @@ all : clean vendor build test
 $(BINARY_NAME):
 	$Q echo -e '$(COLOR_PRINT)Building $(DIR_BUILD)/bin/$(BINARY_NAME) with $(GTK_VERSION)...$(COLOR_RESET)'
 	$Q mkdir -p $(DIR_BUILD)/bin
-	$Q go build -i -v -o $(DIR_BUILD)/bin/$(BINARY_NAME) $(BUILD_FLAGS)
+	$Q go build -i -v -o $(DIR_BUILD)/bin/$(BINARY_NAME) $(BUILD_FLAGS) $(BUILD_TAGS)
 	$Q echo -e '$(COLOR_SUCCESS)Compilation done without errors$(COLOR_RESET)'
 
 build: $(BINARY_NAME)
@@ -77,7 +77,7 @@ vendor:
 	$Q retool sync
 	$Q echo -e '$(COLOR_PRINT)Syncing vendors...$(COLOR_RESET)'
 	$Q retool do govendor sync -v
-	$Q retool do govendor test -i $(GTK_TAG)
+	$Q retool do govendor test -i $(BUILD_TAGS)
 	$Q echo -e '$(COLOR_PRINT)Syncing linters...$(COLOR_RESET)'
 	$Q retool do gometalinter --install --update --force
 	$Q echo -e '$(COLOR_SUCCESS)Synchronization done without errors$(COLOR_RESET)'
@@ -124,13 +124,13 @@ test-code:
 	$Q echo -e '$(COLOR_PRINT)Testing code with linters...$(COLOR_RESET)'
 	$Q find . -name vendor -prune -o -name _tools -prune -o -name "*.go" -exec gofmt -d {} \;
 	@[ $(shell find . -name vendor -prune -o -name _tools -prune -o -name "*.go" -exec gofmt -d {} \; | wc -l) = 0 ]
-	$Q ./_scripts/linter.sh $(GTK_TAG)
+	$Q ./_scripts/linter.sh $(BUILD_TAGS)
 	$Q echo -e '$(COLOR_SUCCESS)Done$(COLOR_RESET)'
 
 # Check unit tests
 test-unit:
 	$Q echo -e '$(COLOR_PRINT)Testing code with unit tests...$(COLOR_RESET)'
-	$Q retool do govendor test +local -v -timeout 5s $(GTK_TAG) ./...
+	$Q retool do govendor test +local -v -timeout 5s $(BUILD_TAGS) ./...
 	$Q echo -e '$(COLOR_SUCCESS)Done$(COLOR_RESET)'
 
 # TODOs should never exist
@@ -149,10 +149,10 @@ coverage:
 	$Q rm -rf $(DIR_COVERAGE)
 	$Q mkdir -p $(DIR_COVERAGE)
 	$Q echo "mode: $(TEST_COVERAGE_MODE)" > $(DIR_COVERAGE)/coverage.out
-	$Q # go test -covermode="$(TEST_COVERAGE_MODE)" -coverprofile="$(DIR_COVERAGE)/coverage.tmp" $(GTK_TAG) "$$pkg" 2>&1 > /dev/null; \
+	$Q # go test -covermode="$(TEST_COVERAGE_MODE)" -coverprofile="$(DIR_COVERAGE)/coverage.tmp" $(BUILD_TAGS) "$$pkg" 2>&1 > /dev/null; \
 	$Q #grep -h -v "^mode:" $(DIR_COVERAGE)/coverage.tmp >> $(DIR_COVERAGE)/coverage.out 2> /dev/null; \
 	$Q for pkg in $(shell retool do govendor list -no-status +local); do \
-		go test -covermode="$(TEST_COVERAGE_MODE)" -coverprofile="$(DIR_COVERAGE)/coverage.tmp" -tags $(GTK_TAG) "$$pkg"; \
+		go test -covermode="$(TEST_COVERAGE_MODE)" -coverprofile="$(DIR_COVERAGE)/coverage.tmp" -tags $(BUILD_TAGS) "$$pkg"; \
 		(test -e $(DIR_COVERAGE)/coverage.tmp && grep -h -v "^mode:" $(DIR_COVERAGE)/coverage.tmp >> $(DIR_COVERAGE)/coverage.out) || true; \
 	done
 	$Q rm -f $(DIR_COVERAGE)/coverage.tmp
