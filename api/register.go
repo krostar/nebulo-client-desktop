@@ -36,7 +36,7 @@ func (api *Server) Register(key crypto.PrivateKey) (newUser *user.User, err erro
 	}
 
 	// send that csr to the server and pray he accept to sign it
-	response, err := api.Post("user", http.StatusCreated, "application/x-pem-file", bytes.NewReader(csr))
+	response, err := api.Post("user", http.StatusCreated, CONTENT_TYPE_PEM, bytes.NewReader(csr))
 	if err != nil {
 		return nil, fmt.Errorf("unable to get response: %v", err)
 	}
@@ -57,6 +57,9 @@ func (api *Server) Register(key crypto.PrivateKey) (newUser *user.User, err erro
 	}
 
 	// try to log with this certificate
+	if err = changeTLSOptions(API, &config.Config.Run.TLS); err != nil {
+		return nil, fmt.Errorf("unable to change tls options to register: %v", err)
+	}
 	return api.Login()
 }
 
@@ -105,9 +108,9 @@ func (api *Server) RegisterWithKeyPairFilename(privateKeyFilepath string, privat
 
 	config.Config.Run.TLS.Key = privateKeyFilepath
 	config.Config.Run.TLS.KeyPassword = string(privateKeyPassword)
-	if err = changeTLSOptions(API, &config.Config.Run.TLS); err != nil {
-		return nil, fmt.Errorf("unable to change tls options to register: %v", err)
-	}
+	// if err = changeTLSOptions(API, &config.Config.Run.TLS); err != nil {
+	// 	return nil, fmt.Errorf("unable to change tls options to register: %v", err)
+	// }
 
 	return api.Register(key)
 }

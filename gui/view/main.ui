@@ -1,35 +1,14 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!-- Generated with glade 3.18.3 -->
 <interface>
-  <requires lib="gtk+" version="3.18.9"/>
-  <object class="GtkImage" id="imagemenuitem_creat">
-    <property name="visible">True</property>
-    <property name="can_focus">False</property>
-    <property name="stock">gtk-missing-image</property>
-  </object>
-  <object class="GtkImage" id="imagemenuitem_profil_edi">
-    <property name="visible">True</property>
-    <property name="can_focus">False</property>
-    <property name="stock">gtk-missing-image</property>
-  </object>
-  <object class="GtkImage" id="imagemenuitem_profil_se">
-    <property name="visible">True</property>
-    <property name="can_focus">False</property>
-    <property name="stock">gtk-missing-image</property>
-  </object>
-  <object class="GtkImage" id="imagemenuitem_profil_shar">
-    <property name="visible">True</property>
-    <property name="can_focus">False</property>
-    <property name="stock">gtk-missing-image</property>
-  </object>
+  <requires lib="gtk+" version="3.18"/>
   <object class="GtkWindow" id="window_main">
     <property name="can_focus">False</property>
     <property name="has_tooltip">True</property>
     <property name="title" translatable="yes">Nebulo</property>
     <property name="window_position">center</property>
-    <property name="default_width">800</property>
-    <property name="default_height">600</property>
-    <property name="hide_titlebar_when_maximized">True</property>
+    <property name="default_width">1280</property>
+    <property name="default_height">720</property>
     <property name="has_resize_grip">True</property>
     <child>
       <object class="GtkGrid" id="grid_main">
@@ -50,12 +29,11 @@
                     <property name="visible">True</property>
                     <property name="can_focus">False</property>
                     <child>
-                      <object class="GtkImageMenuItem" id="imagemenuitem_quit">
-                        <property name="label">gtk-quit</property>
+                      <object class="GtkMenuItem" id="menuitem_app_quit">
                         <property name="visible">True</property>
                         <property name="can_focus">False</property>
+                        <property name="label">_Exit</property>
                         <property name="use_underline">True</property>
-                        <property name="use_stock">True</property>
                       </object>
                     </child>
                   </object>
@@ -73,32 +51,26 @@
                     <property name="visible">True</property>
                     <property name="can_focus">False</property>
                     <child>
-                      <object class="GtkImageMenuItem" id="imagemenuitem_profil_see">
+                      <object class="GtkMenuItem" id="menuitem_profil_see">
+                        <property name="visible">True</property>
+                        <property name="can_focus">False</property>
                         <property name="label">See</property>
-                        <property name="visible">True</property>
-                        <property name="can_focus">False</property>
-                        <property name="image">imagemenuitem_profil_se</property>
-                        <property name="use_stock">False</property>
                       </object>
                     </child>
                     <child>
-                      <object class="GtkImageMenuItem" id="imagemenuitem_profil_edit">
+                      <object class="GtkMenuItem" id="menuitem_profil_edit">
+                        <property name="visible">True</property>
+                        <property name="can_focus">False</property>
                         <property name="label">_Edit</property>
-                        <property name="visible">True</property>
-                        <property name="can_focus">False</property>
                         <property name="use_underline">True</property>
-                        <property name="image">imagemenuitem_profil_edi</property>
-                        <property name="use_stock">False</property>
                       </object>
                     </child>
                     <child>
-                      <object class="GtkImageMenuItem" id="imagemenuitem_profil_share">
-                        <property name="label">_Share</property>
+                      <object class="GtkMenuItem" id="menuitem_profil_share">
                         <property name="visible">True</property>
                         <property name="can_focus">False</property>
+                        <property name="label">_Share</property>
                         <property name="use_underline">True</property>
-                        <property name="image">imagemenuitem_profil_shar</property>
-                        <property name="use_stock">False</property>
                       </object>
                     </child>
                   </object>
@@ -109,20 +81,40 @@
               <object class="GtkMenuItem" id="menuitem_channels">
                 <property name="visible">True</property>
                 <property name="can_focus">False</property>
-                <property name="label" translatable="yes">_Channel</property>
+                <property name="label" translatable="yes">Channels</property>
                 <property name="use_underline">True</property>
                 <child type="submenu">
                   <object class="GtkMenu" id="menu_channels">
                     <property name="visible">True</property>
                     <property name="can_focus">False</property>
                     <child>
-                      <object class="GtkImageMenuItem" id="imagemenuitem_create">
-                        <property name="label">_Create</property>
+                      <object class="GtkMenuItem" id="menuitem_channels_create">
                         <property name="visible">True</property>
                         <property name="can_focus">False</property>
+                        <property name="label">_Create</property>
                         <property name="use_underline">True</property>
-                        <property name="image">imagemenuitem_creat</property>
-                        <property name="use_stock">False</property>
+                      </object>
+                    </child>
+                  </object>
+                </child>
+              </object>
+            </child>
+            <child>
+              <object class="GtkMenuItem" id="menuitem_contacts">
+                <property name="visible">True</property>
+                <property name="can_focus">False</property>
+                <property name="label" translatable="yes">_Contacts</property>
+                <property name="use_underline">True</property>
+                <child type="submenu">
+                  <object class="GtkMenu" id="menu_contacts">
+                    <property name="visible">True</property>
+                    <property name="can_focus">False</property>
+                    <child>
+                      <object class="GtkMenuItem" id="menuitem_contacts_add">
+                        <property name="visible">True</property>
+                        <property name="can_focus">False</property>
+                        <property name="label">_Add</property>
+                        <property name="use_underline">True</property>
                       </object>
                     </child>
                   </object>
@@ -141,12 +133,10 @@
                     <property name="visible">True</property>
                     <property name="can_focus">False</property>
                     <child>
-                      <object class="GtkImageMenuItem" id="imagemenuitem_help">
-                        <property name="label">gtk-about</property>
+                      <object class="GtkMenuItem" id="menuitem_settings_help">
                         <property name="visible">True</property>
                         <property name="can_focus">False</property>
-                        <property name="use_underline">True</property>
-                        <property name="use_stock">True</property>
+                        <property name="label">Help</property>
                       </object>
                     </child>
                   </object>
@@ -165,6 +155,9 @@
             <property name="can_focus">True</property>
             <property name="hexpand">True</property>
             <property name="vexpand">True</property>
+            <property name="position">250</property>
+            <property name="position_set">True</property>
+            <property name="wide_handle">True</property>
             <child>
               <object class="GtkGrid" id="grid_channels">
                 <property name="visible">True</property>
@@ -210,6 +203,7 @@
                                 <property name="height_request">80</property>
                                 <property name="visible">True</property>
                                 <property name="can_focus">True</property>
+                                <property name="selectable">False</property>
                                 <child>
                                   <object class="GtkLabel" id="channels">
                                     <property name="visible">True</property>
@@ -267,6 +261,7 @@
                                 <property name="height_request">80</property>
                                 <property name="visible">True</property>
                                 <property name="can_focus">True</property>
+                                <property name="selectable">False</property>
                                 <child>
                                   <object class="GtkLabel" id="messages">
                                     <property name="visible">True</property>

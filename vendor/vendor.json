@@ -33,42 +33,42 @@
 			"revisionTime": "2017-04-02T20:45:10Z"
 		},
 		{
-			"checksumSHA1": "U9sENacKzuFqYduLZG2ah6iVN00=",
+			"checksumSHA1": "rxDTet0DhMJ4jRVRHgm9JiifkuU=",
 			"path": "github.com/krostar/nebulo-golib/log",
-			"revision": "a392027a278074e096cc41c1606a0a7f19f2c0d5",
-			"revisionTime": "2017-04-19T23:22:33Z",
+			"revision": "4995086e13e511cd8201e69f038a2b32bbd9e468",
+			"revisionTime": "2017-04-25T19:07:47Z",
 			"version": "dev",
 			"versionExact": "dev"
 		},
 		{
 			"checksumSHA1": "d2mxU4ftjUXG9jHULbwW8RI4sjQ=",
 			"path": "github.com/krostar/nebulo-golib/router/httperror",
-			"revision": "a392027a278074e096cc41c1606a0a7f19f2c0d5",
-			"revisionTime": "2017-04-19T23:22:33Z",
+			"revision": "4995086e13e511cd8201e69f038a2b32bbd9e468",
+			"revisionTime": "2017-04-25T19:07:47Z",
 			"version": "dev",
 			"versionExact": "dev"
 		},
 		{
 			"checksumSHA1": "Ev7xGi5VIl+CL1Io5Q1Ex61AAdM=",
 			"path": "github.com/krostar/nebulo-golib/tools",
-			"revision": "a392027a278074e096cc41c1606a0a7f19f2c0d5",
-			"revisionTime": "2017-04-19T23:22:33Z",
+			"revision": "4995086e13e511cd8201e69f038a2b32bbd9e468",
+			"revisionTime": "2017-04-25T19:07:47Z",
 			"version": "dev",
 			"versionExact": "dev"
 		},
 		{
-			"checksumSHA1": "lKdUZ4RvXf0nt3qaYgJVGgzD2n0=",
+			"checksumSHA1": "HbXI235XWISR3pmxzngpXUY2YGU=",
 			"path": "github.com/krostar/nebulo-golib/tools/cert",
-			"revision": "a392027a278074e096cc41c1606a0a7f19f2c0d5",
-			"revisionTime": "2017-04-19T23:22:33Z",
+			"revision": "4995086e13e511cd8201e69f038a2b32bbd9e468",
+			"revisionTime": "2017-04-25T19:07:47Z",
 			"version": "dev",
 			"versionExact": "dev"
 		},
 		{
 			"checksumSHA1": "l/gJu7XY8SeUB4oQ3xQSZGOUo/8=",
 			"path": "github.com/krostar/nebulo-golib/tools/validator",
-			"revision": "a392027a278074e096cc41c1606a0a7f19f2c0d5",
-			"revisionTime": "2017-04-19T23:22:33Z",
+			"revision": "4995086e13e511cd8201e69f038a2b32bbd9e468",
+			"revisionTime": "2017-04-25T19:07:47Z",
 			"version": "dev",
 			"versionExact": "dev"
 		},

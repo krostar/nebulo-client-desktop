@@ -34,6 +34,132 @@ func (m *Module) Dialog(messageType gtk.MessageType, format string, args ...inte
 	infoBox.Show()
 }
 
+// AttachButtonClickedSignal attach the clicked sign to a button
+func (m *Module) AttachButtonClickedSignal(builder *gtk.Builder, buttonName string, onClick OnClickEvent) (err error) {
+	button, err := m.FindButtonWithBuilder(builder, buttonName)
+	if err != nil {
+		return fmt.Errorf("unable to find button %q: %v", buttonName, err)
+	}
+
+	if _, err = button.Connect("clicked", onClick); err != nil {
+		return fmt.Errorf("unable to add signal clicked to button %q: %v", buttonName, err)
+	}
+
+	return nil
+}
+
+// FindTextViewWithBuilder return a text view stored in a builder, based on his name
+// nolint: dupl
+func (m *Module) FindTextViewWithBuilder(builder *gtk.Builder, tvName string) (tv *gtk.TextView, err error) {
+	widget, err := builder.GetObject(tvName)
+	if err != nil {
+		return nil, fmt.Errorf("unable to get text view %q from builder: %v", tvName, err)
+	}
+
+	tv, ok := widget.(*gtk.TextView)
+	if !ok {
+		return nil, fmt.Errorf("unable to cast text view from widget")
+	}
+
+	return tv, nil
+}
+
+// FindListBoxWithBuilder return a list box stored in a builder, based on his name
+// nolint: dupl
+func (m *Module) FindListBoxWithBuilder(builder *gtk.Builder, tvName string) (tv *gtk.ListBox, err error) {
+	widget, err := builder.GetObject(tvName)
+	if err != nil {
+		return nil, fmt.Errorf("unable to get list box %q from builder: %v", tvName, err)
+	}
+
+	tv, ok := widget.(*gtk.ListBox)
+	if !ok {
+		return nil, fmt.Errorf("unable to cast list box from widget")
+	}
+
+	return tv, nil
+}
+
+// FindListStoreWithBuilder return a list store stored in a builder, based on his name
+// nolint: dupl
+func (m *Module) FindListStoreWithBuilder(builder *gtk.Builder, tvName string) (tv *gtk.ListStore, err error) {
+	widget, err := builder.GetObject(tvName)
+	if err != nil {
+		return nil, fmt.Errorf("unable to get list store %q from builder: %v", tvName, err)
+	}
+
+	tv, ok := widget.(*gtk.ListStore)
+	if !ok {
+		return nil, fmt.Errorf("unable to cast list store from widget")
+	}
+
+	return tv, nil
+}
+
+// FindTreeViewWithBuilder return a tree view stored in a builder, based on his name
+// nolint: dupl
+func (m *Module) FindTreeViewWithBuilder(builder *gtk.Builder, tvName string) (tv *gtk.TreeView, err error) {
+	widget, err := builder.GetObject(tvName)
+	if err != nil {
+		return nil, fmt.Errorf("unable to get tree view %q from builder: %v", tvName, err)
+	}
+
+	tv, ok := widget.(*gtk.TreeView)
+	if !ok {
+		return nil, fmt.Errorf("unable to cast tree view from widget")
+	}
+
+	return tv, nil
+}
+
+// FindPanedWithBuilder return a paned stored in a builder, based on his name
+// nolint: dupl
+func (m *Module) FindPanedWithBuilder(builder *gtk.Builder, panedName string) (menuItem *gtk.Paned, err error) {
+	widget, err := builder.GetObject(panedName)
+	if err != nil {
+		return nil, fmt.Errorf("unable to get paned %q from builder: %v", panedName, err)
+	}
+
+	paned, ok := widget.(*gtk.Paned)
+	if !ok {
+		return nil, fmt.Errorf("unable to cast paned from widget")
+	}
+
+	return paned, nil
+}
+
+// FindMenuItemWithBuilder return a menuitem stored in a builder, based on his name
+// nolint: dupl
+func (m *Module) FindMenuItemWithBuilder(builder *gtk.Builder, imiName string) (menuItem *gtk.MenuItem, err error) {
+	widget, err := builder.GetObject(imiName)
+	if err != nil {
+		return nil, fmt.Errorf("unable to get menu item %q from builder: %v", imiName, err)
+	}
+
+	menuItem, ok := widget.(*gtk.MenuItem)
+	if !ok {
+		return nil, fmt.Errorf("unable to cast menuItem from widget")
+	}
+
+	return menuItem, nil
+}
+
+// FindDialogWithBuilder return a dialog stored in a builder, based on his name
+// nolint: dupl
+func (m *Module) FindDialogWithBuilder(builder *gtk.Builder, dialogName string) (dialog *gtk.Dialog, err error) {
+	widget, err := builder.GetObject(dialogName)
+	if err != nil {
+		return nil, fmt.Errorf("unable to get dialog %q from builder: %v", dialogName, err)
+	}
+
+	dialog, ok := widget.(*gtk.Dialog)
+	if !ok {
+		return nil, fmt.Errorf("unable to cast dialog from widget")
+	}
+
+	return dialog, nil
+}
+
 // FindButtonWithBuilder return a button stored in a builder, based on his name
 // nolint: dupl
 func (m *Module) FindButtonWithBuilder(builder *gtk.Builder, buttonName string) (button *gtk.Button, err error) {

@@ -17,7 +17,7 @@ func (api *Server) Login() (loggedUser *user.User, err error) {
 
 	// there is no login call, just check if the current configuration allow a required-auth call
 	loggedUser, err = api.UserProfile()
-	if err != nil { // no ? delete current configuration
+	if err != nil { // delete current configuration
 		config.Config.Run.TLS.Key = ""
 		config.Config.Run.TLS.KeyPassword = ""
 		err = fmt.Errorf("unable to login: %v", err)
@@ -33,15 +33,12 @@ func (api *Server) Login() (loggedUser *user.User, err error) {
 		return nil, err
 	}
 
-	// login succeed
-	user.Login(loggedUser)
-
-	return loggedUser, nil
+	return user.Login(loggedUser)
 }
 
 // LoginWithCertsFilename do the Login call but with the cert and key path
 func (api *Server) LoginWithCertsFilename(certFilepath string, keyFilePath string, keyPassword []byte) (_ *user.User, err error) {
-	_, _, err = cert.CertAndKeyFromFiles(certFilepath, keyFilePath, keyPassword)
+	_, _, err = cert.KeyPairFromFiles(certFilepath, keyFilePath, keyPassword)
 	if err != nil {
 		return nil, fmt.Errorf("unable to get certificate from file: %v", err)
 	}

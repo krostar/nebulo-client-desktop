@@ -29,6 +29,11 @@ type Server struct {
 // API is the current configuration to contact the api server
 var API *Server
 
+const (
+	CONTENT_TYPE_JSON = "application/json"
+	CONTENT_TYPE_PEM  = "application/x-pem-file"
+)
+
 func createTLSConfig(tlsOptions *config.TLSOptions) (config *tls.Config, err error) {
 	clientCAFile, err := ioutil.ReadFile(tlsOptions.ClientsCACert)
 	if err != nil {

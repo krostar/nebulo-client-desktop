@@ -16,12 +16,13 @@ type globalOptions struct {
 
 type logOptions struct {
 	Verbose string `json:"verbose" validate:"regexp=^(quiet|critical|error|warning|info|request|debug)?$"`
-	File    string `json:"file" validate:"file=omitempty+readable"`
+	File    string `json:"file" validate:"file=omitempty+writable"`
 }
 
 type runOptions struct {
-	TLS     TLSOptions `json:"tls"`
-	BaseURL string     `json:"baseurl"`
+	TLS          TLSOptions `json:"tls"`
+	BaseURL      string     `json:"baseurl" validate:"string=nonempty"`
+	ContactsFile string     `json:"contacts_file" validate:"string=nonempty"`
 }
 
 // TLSOptions store required TLS options
@@ -51,18 +52,17 @@ var (
 )
 
 // LoadFile fill config.File with the configuration parsed from path
-func LoadFile(path string) (err error) {
-	raw, err := ioutil.ReadFile(path)
+func LoadFile(filepath string) (err error) {
+	raw, err := ioutil.ReadFile(filepath)
 	if err != nil {
-		return fmt.Errorf("unable to read file: %v", err)
+		return fmt.Errorf("unable to read file %q: %v", filepath, err)
 	}
 
 	if err = json.Unmarshal(raw, File); err != nil {
 		return fmt.Errorf("unable to parse json file: %v", err)
 	}
 
-	Filepath = path
-
+	Filepath = filepath
 	return nil
 }
 

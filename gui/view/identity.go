@@ -15,6 +15,7 @@ type Identity struct {
 	Module
 	builder        *gtk.Builder
 	onLoginSucceed func() error
+	gtkQuitOnClose bool
 }
 
 // Load load and fill all the component of the login module
@@ -39,12 +40,14 @@ func (v *Identity) Load(onLoginSucceed func() error) (err error) {
 	if err = v.attachWindowBasicSignals(); err != nil {
 		return fmt.Errorf("unable to attach signals: %v", err)
 	}
-	if err = v.attachButtonClickedSignals(v.builder, "button_register", v.onRegisterClicked); err != nil {
+	if err = v.AttachButtonClickedSignal(v.builder, "button_register", v.onRegisterClicked); err != nil {
 		return fmt.Errorf("unable to add button callback: %v", err)
 	}
-	if err = v.attachButtonClickedSignals(v.builder, "button_login", v.onLoginClicked); err != nil {
+	if err = v.AttachButtonClickedSignal(v.builder, "button_login", v.onLoginClicked); err != nil {
 		return fmt.Errorf("unable to add button callback: %v", err)
 	}
+
+	v.gtkQuitOnClose = true
 
 	// finally show the window
 	v.Window.ShowAll()
@@ -52,36 +55,27 @@ func (v *Identity) Load(onLoginSucceed func() error) (err error) {
 }
 
 func (v *Identity) attachWindowBasicSignals() (err error) {
-	return nil
-}
-
-func (v *Identity) attachButtonClickedSignals(builder *gtk.Builder, buttonName string, onClick OnClickEvent) (err error) {
-	button, err := v.FindButtonWithBuilder(builder, buttonName)
-	if err != nil {
-		return fmt.Errorf("unable to find button %q: %v", buttonName, err)
-	}
-
-	if _, err = button.Connect("clicked", onClick); err != nil {
-		return fmt.Errorf("unable to add signal clicked to button %q: %v", buttonName, err)
-	}
-
-	return nil
+	_, err = v.Window.Connect("destroy", func() error {
+		if v.gtkQuitOnClose {
+			gtk.MainQuit()
+		}
+		return nil
+	}, nil)
+	return err
 }
 
 func (v *Identity) onLoginClicked() (err error) {
 	// get certificate from input
 	fileChooserCert, err := v.FindFileChooserButtonWithBuilder(v.builder, "filechooser_certificate_login")
 	if err != nil {
-		err = fmt.Errorf("unable to find file chooser certificate: %v", err)
-		log.Errorln(err)
-		return err
+		return log.ErrorIf(fmt.Errorf("unable to find file chooser certificate: %v", err))
 	}
 	cert := fileChooserCert.GetFilename()
 
 	// get key and key password from inputs
 	key, keypwd, err := v.loadKeyInputs("login")
 	if err != nil {
-		return fmt.Errorf("unable to load keys inputs: %v", err)
+		return log.ErrorIf(fmt.Errorf("unable to load keys inputs: %v", err))
 	}
 
 	log.Debugf("selected identity key file: %q", key)
@@ -95,15 +89,16 @@ func (v *Identity) onLoginClicked() (err error) {
 	}
 
 	// it's a match! hide this window and let the magic happen
-	v.Window.Destroy()
-	return v.onLoginSucceed()
+	defer v.Window.Destroy()
+	v.gtkQuitOnClose = false
+	return log.ErrorIf(v.onLoginSucceed())
 }
 
 func (v *Identity) onRegisterClicked() (err error) {
 	// get key and key password from inputs
 	key, keypwd, err := v.loadKeyInputs("register")
 	if err != nil {
-		return fmt.Errorf("unable to load keys inputs: %v", err)
+		return log.ErrorIf(fmt.Errorf("unable to load keys inputs: %v", err))
 	}
 
 	log.Debugf("selected identity key file: %q", key)
@@ -115,16 +110,15 @@ func (v *Identity) onRegisterClicked() (err error) {
 		return err
 	}
 
-	v.Window.Destroy()
-	return v.onLoginSucceed()
+	defer v.Window.Destroy()
+	v.gtkQuitOnClose = false
+	return log.ErrorIf(v.onLoginSucceed())
 }
 
 func (v *Identity) loadKeyInputs(suffix string) (key string, keypwd string, err error) {
 	fileChooserPrivKey, err := v.FindFileChooserButtonWithBuilder(v.builder, "filechooser_privkey_"+suffix)
 	if err != nil {
-		err = fmt.Errorf("unable to find file chooser private key: %v", err)
-		log.Errorln(err)
-		return "", "", err
+		return "", "", fmt.Errorf("unable to find file chooser private key: %v", err)
 	}
 	key = fileChooserPrivKey.GetFilename()
 	if key == "" {
@@ -133,15 +127,11 @@ func (v *Identity) loadKeyInputs(suffix string) (key string, keypwd string, err 
 
 	entryPrivKeyPwd, err := v.FindEntryWithBuilder(v.builder, "entry_privpwd_"+suffix)
 	if err != nil {
-		err = fmt.Errorf("unable to find entry private key password: %v", err)
-		log.Errorln(err)
-		return "", "", err
+		return "", "", fmt.Errorf("unable to find entry private key password: %v", err)
 	}
 	keypwd, err = entryPrivKeyPwd.GetText()
 	if err != nil {
-		err = fmt.Errorf("unable to get text from entry private key password: %v", err)
-		log.Errorln(err)
-		return "", "", err
+		return "", "", fmt.Errorf("unable to get text from entry private key password: %v", err)
 	}
 
 	return key, keypwd, nil
