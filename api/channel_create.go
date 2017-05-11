@@ -12,9 +12,6 @@ import (
 	"github.com/krostar/nebulo-client-desktop/channel"
 )
 
-// ChannelCreateResponse is the response format wanted from a /channel call
-type ChannelCreateResponse channel.Channel
-
 type channelCreateRequest struct {
 	Name             string   `json:"name"`
 	MembersPublicKey []string `json:"members_public_key"`
@@ -42,10 +39,10 @@ func (api *Server) ChannelCreate(name string, membersPublicKey []string) (c *cha
 		return nil, fmt.Errorf("unable to read response data: %v", err)
 	}
 
-	crr := &ChannelCreateResponse{}
+	crr := &channel.Channel{}
 	if err = json.Unmarshal(raw, crr); err != nil {
 		return nil, fmt.Errorf("unable to parse response data: %v", err)
 	}
 
-	return (*channel.Channel)(crr), nil
+	return crr, nil
 }

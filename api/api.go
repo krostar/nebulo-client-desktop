@@ -8,6 +8,7 @@ import (
 	"io"
 	"io/ioutil"
 	"net/http"
+	"net/url"
 	"time"
 
 	"github.com/krostar/nebulo-golib/log"
@@ -88,8 +89,12 @@ func (api *Server) Request(request *http.Request, expectedStatus int) (response 
 }
 
 // Get create and send a GET request and return the response
-func (api *Server) Get(endpoint string, expectedStatus int) (response *http.Response, err error) {
-	request, err := http.NewRequest("GET", fmt.Sprintf("%s/%s", api.BaseURL, endpoint), nil)
+func (api *Server) Get(endpoint string, expectedStatus int, queryParams url.Values) (response *http.Response, err error) {
+	params := ""
+	if queryParams != nil {
+		params = "?" + queryParams.Encode()
+	}
+	request, err := http.NewRequest("GET", fmt.Sprintf("%s/%s%s", api.BaseURL, endpoint, params), nil)
 	if err != nil {
 		return nil, fmt.Errorf("unable to create request: %v", err)
 	}

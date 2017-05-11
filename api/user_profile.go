@@ -18,7 +18,7 @@ type UserProfileResponse user.User
 func (api *Server) UserProfile() (u *user.User, err error) {
 	log.Debugln("doing User Profile call")
 
-	response, err := api.Get("user", http.StatusOK)
+	response, err := api.Get("user", http.StatusOK, nil)
 	if err != nil {
 		return nil, fmt.Errorf("unable to get response: %v", err)
 	}

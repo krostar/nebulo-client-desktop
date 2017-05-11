@@ -48,6 +48,22 @@ func (m *Module) AttachButtonClickedSignal(builder *gtk.Builder, buttonName stri
 	return nil
 }
 
+// FindLabelWithBuilder return a text view stored in a builder, based on his name
+// nolint: dupl
+func (m *Module) FindLabelWithBuilder(builder *gtk.Builder, labelName string) (l *gtk.Label, err error) {
+	widget, err := builder.GetObject(labelName)
+	if err != nil {
+		return nil, fmt.Errorf("unable to get label %q from builder: %v", labelName, err)
+	}
+
+	l, ok := widget.(*gtk.Label)
+	if !ok {
+		return nil, fmt.Errorf("unable to cast label from widget")
+	}
+
+	return l, nil
+}
+
 // FindTextViewWithBuilder return a text view stored in a builder, based on his name
 // nolint: dupl
 func (m *Module) FindTextViewWithBuilder(builder *gtk.Builder, tvName string) (tv *gtk.TextView, err error) {

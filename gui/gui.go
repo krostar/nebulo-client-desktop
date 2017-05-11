@@ -9,11 +9,13 @@ import (
 	"github.com/krostar/nebulo-golib/log"
 
 	"github.com/krostar/nebulo-client-desktop/api"
+	"github.com/krostar/nebulo-client-desktop/channel"
 	"github.com/krostar/nebulo-client-desktop/config"
 	"github.com/krostar/nebulo-client-desktop/gui/view"
 )
 
 var baseTitle = "Nebulo - "
+var MainWindow *gtk.Window
 
 // GUI start the main gui window
 func GUI() (err error) {
@@ -38,11 +40,11 @@ func GUI() (err error) {
 		log.Warningf("unable to log in, we have to ask for valid credentials: %v", err)
 		window := view.Identity{}
 		window.WindowBaseTitle = baseTitle
-		if err = window.Load(onLoginSucced); err != nil {
+		if err = window.Load(onLoginSucceed); err != nil {
 			return fmt.Errorf("unable to build login window: %v", err)
 		}
 	} else { // login succed, open the main view
-		if err = onLoginSucced(); err != nil {
+		if err = onLoginSucceed(); err != nil {
 			return err
 		}
 	}
@@ -52,11 +54,20 @@ func GUI() (err error) {
 	return nil
 }
 
-func onLoginSucced() error {
-	window := view.Main{}
-	window.WindowBaseTitle = baseTitle
-	if err := window.Load(); err != nil {
+func onLoginSucceed() (err error) {
+	MainWindow := view.Main{}
+	MainWindow.WindowBaseTitle = baseTitle
+	if err = MainWindow.Load(); err != nil {
 		return fmt.Errorf("unable to build main window: %v", err)
+	}
+
+	channel.Channels, err = api.API.ChannelList()
+	if err != nil {
+		MainWindow.Dialog(gtk.MESSAGE_ERROR, "unable to fetch channels list: %v", err)
+	}
+	err = MainWindow.ChannelsRefresh()
+	if err != nil {
+		return log.ErrorIf(fmt.Errorf("unable to reresh channel on GUI: %v", err))
 	}
 	return nil
 }

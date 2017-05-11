@@ -19,7 +19,7 @@ type VersionResponse struct {
 func (api *Server) Version() (version *VersionResponse, err error) {
 	log.Debugln("doing Version call")
 
-	response, err := api.Get("version", http.StatusOK)
+	response, err := api.Get("version", http.StatusOK, nil)
 	if err != nil {
 		return nil, fmt.Errorf("unable to get response: %v", err)
 	}

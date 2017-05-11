@@ -62,7 +62,7 @@ func (v *ChannelAdd) Load(parent *gtk.Window) (err error) {
 }
 
 func (v *ChannelAdd) fillContacts(file string) (err error) {
-	v.liststore, err = gtk.ListStoreNew(glib.TYPE_STRING, glib.TYPE_STRING)
+	v.liststore, err = gtk.ListStoreNew(glib.TYPE_STRING)
 	if err != nil {
 		return fmt.Errorf("unable to create list store: %v", err)
 	}
@@ -71,7 +71,7 @@ func (v *ChannelAdd) fillContacts(file string) (err error) {
 		iter := v.liststore.Append()
 		err = v.liststore.Set(iter, []int{0}, []interface{}{contact.Name})
 		if err != nil {
-			return fmt.Errorf("unable to insert contact %q (%q): %v", contact.Name, contact.PublicKeyB64, err)
+			return fmt.Errorf("unable to insert contact %q: %v", contact.Name, err)
 		}
 	}
 	v.treeview.SetModel(v.liststore)
