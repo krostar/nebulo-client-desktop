@@ -1,6 +1,7 @@
 # [nebulo-client-desktop](https://github.com/krostar/nebulo-client-desktop) [![License](https://img.shields.io/github/license/krostar/nebulo-client-desktop.svg)](https://tldrlegal.com/license/gnu-general-public-license-v3-(gpl-3)) [![GitHub release](https://img.shields.io/github/release/krostar/nebulo-client-desktop.svg)](https://github.com/krostar/nebulo-client-desktop/releases/latest) [![Godoc](https://godoc.org/github.com/krostar/nebulo-client-desktop?status.svg)](https://godoc.org/github.com/krostar/nebulo-client-desktop)
 
 Nebulo is a secure way of instant messaging that respect and protect your privacy.
+/!\\ This project is a school project, it's not finished, it's not 100% working, don't use it unless you know what you do /!\\
 
 [![Build status](https://travis-ci.org/krostar/nebulo-client-desktop.svg?branch=dev)](https://travis-ci.org/krostar/nebulo-client-desktop) [![Go Report Card](https://goreportcard.com/badge/github.com/krostar/nebulo-client-desktop)](https://goreportcard.com/report/github.com/krostar/nebulo-client-desktop) [![Codebeat status](https://codebeat.co/badges/0d3bbf0b-9c5b-44b2-95ae-d29438c89730)](https://codebeat.co/projects/github-com-krostar-nebulo-client-desktop-dev) [![Coverage status](https://coveralls.io/repos/github/krostar/nebulo-client-desktop/badge.svg?branch=dev)](https://coveralls.io/github/krostar/nebulo-client-desktop?branch=dev)
 
